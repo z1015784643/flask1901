@@ -33,6 +33,6 @@ footer{
     padding: 12px 24px;
     border-bottom: 1px solid #dddddd;
 }
-.movie-list li:hovwe{
+.movie-list li:hover{
     background-color: blueviolet;
 }
