@@ -6,7 +6,7 @@ from flask import Flask
 from flask import render_template,flash,redirect,request,url_for
 from werkzeug.security import generate_password_hash,check_password_hash
 from flask_sqlalchemy import SQLAlchemy  #导入扩展类
-from flask_login import LoginManager,UserMixin,login_user,logout_user
+from flask_login import LoginManager,UserMixin,login_user,logout_user,login_required
 
 
 WIN = sys.platform.startswith('win')
@@ -59,10 +59,11 @@ def common_user():
     return dict(user = user)
 
 # view视图
-@app.route('/',methods=['GET','POST'])
 # @app.route('/')
 # @app.route('/index')
 # @app.route('/home')
+@app.route('/',methods=['GET','POST'])
+@login_required
 def index():
     # user = User.query.first()
     # requesr在请求出发才会包含数据
@@ -83,6 +84,7 @@ def index():
     return render_template('index.html',movies=movies)
 
 @app.route('/movie/edit/<int:movie_id>',methods=['GET','POST'])
+@login_required
 def edit(movie_id):
     movie = Movies.query.get_or_404(movie_id)
     if request.method == 'POST':
@@ -100,6 +102,7 @@ def edit(movie_id):
 
 # 删除
 @app.route('/movie/delete/<int:movie_id>',methods=['GET','POST'])
+@login_required
 def delete(movie_id):
     movie = Movies.query.get_or_404(movie_id)
     db.session.delete(movie)
@@ -135,7 +138,7 @@ def login():
 def logout():
     logout_user()
     flash('拜拜')
-    return redirect(url_for('index'))
+    return redirect(url_for('login'))
 
 
 # # 动态url
@@ -176,6 +179,7 @@ def forge():
         movie = Movies(title = m['title'],year = m['year'])
         db.session.add(movie)
     db.session.commit()
+    flash('导入数据完成')
 
 
 # 生成管理员账号
