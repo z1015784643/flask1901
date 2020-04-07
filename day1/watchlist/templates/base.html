@@ -5,12 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>{{ name }}'s WatchList</title>
+    <title>{{ current_user.name }}'s WatchList</title>
     <link rel="stylesheet" href="{{url_for('static',filename='css/style.css')}}">
     {% endblock %}
 </head>
 <body>
-    <h2>{{user}}'s WatchList
+    <h2>{{ current_user.name }}'s WatchList
         <img src="" alt="">
     </h2>
     {% for message in get_flashed_messages() %}

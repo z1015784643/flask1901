@@ -140,10 +140,11 @@ def logout():
     flash('拜拜')
     return redirect(url_for('login'))
 
-@app.route('/settings',methods = (['GET', 'POST']))
+# settings 设置
+@app.route('/settings',methods=['GET','POST'])
 @login_required
 def settings():
-    if request.method == 'post':
+    if request.method == 'POST':
         name = request.form['name']
         if not name or len(name)>20:
             flash('输入错误')
@@ -152,6 +153,7 @@ def settings():
         db.session.commit()
         flash('名称已经更新')
         return redirect(url_for('index'))
+
     return render_template('settings.html')
 # # 动态url
 # @app.route('/index/<name>')
