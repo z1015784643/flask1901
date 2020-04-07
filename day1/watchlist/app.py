@@ -6,14 +6,14 @@ from flask import Flask
 from flask import render_template,flash,redirect,request,url_for
 from werkzeug.security import generate_password_hash,check_password_hash
 from flask_sqlalchemy import SQLAlchemy  #导入扩展类
-from flask_login import LoginManager,UserMixin,login_user,logout_user,login_required
+from flask_login import LoginManager,UserMixin,login_user,logout_user,login_required,current_user
 
 
 WIN = sys.platform.startswith('win')
 if WIN:
     prefix = 'sqlite:///'
 else:
-    prefix = 'sqlie:////'
+    prefix = 'sqlite:////'
 
 app = Flask(__name__)
 
@@ -31,7 +31,7 @@ login_manager = LoginManager(app)  #实例化登录扩展类
 def load_user(user_id):
     user = User.query.get(int(user_id))
     return user
-
+login_manager.login_view = 'login'
 
 
 
@@ -63,11 +63,11 @@ def common_user():
 # @app.route('/index')
 # @app.route('/home')
 @app.route('/',methods=['GET','POST'])
-@login_required
 def index():
     # user = User.query.first()
     # requesr在请求出发才会包含数据
     if request.method == 'POST':
+        # if not current_user.is_authenticated
         title = request.form.get('title')
         year = request.form.get('year')
         if not title or not year or len(year)>4 or len(title)>60:
@@ -140,7 +140,19 @@ def logout():
     flash('拜拜')
     return redirect(url_for('login'))
 
-
+@app.route('/settings',methods = (['GET', 'POST']))
+@login_required
+def settings():
+    if request.method == 'post':
+        name = request.form['name']
+        if not name or len(name)>20:
+            flash('输入错误')
+            return redirect(url_for('settings'))
+        current_user.name = name
+        db.session.commit()
+        flash('名称已经更新')
+        return redirect(url_for('index'))
+    return render_template('settings.html')
 # # 动态url
 # @app.route('/index/<name>')
 # def home(name):
